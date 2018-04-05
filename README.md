@@ -1,0 +1,1 @@
+<img src="https://github.com/nikolajakshic/kcam/blob/master/preview/screen_1.png" width="150">   <img src="https://github.com/nikolajakshic/kcam/blob/master/preview/screen_2.png" width="150">
