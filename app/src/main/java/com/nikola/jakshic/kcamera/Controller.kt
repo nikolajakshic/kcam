@@ -18,7 +18,7 @@ import android.view.ViewGroup
 class Controller(
         private val callback: Camera.PictureCallback,
         private val context: Activity?,
-        private val container: ViewGroup) : OrientationChangeListener.OrientationListener {
+        private val container: ViewGroup) {
 
     // Keys for shared prefs
     private val CAMERA_KEY = "cam-id"
@@ -28,7 +28,6 @@ class Controller(
     private var params: Camera.Parameters? = null
     private var preview: Preview? = null
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    private val orientationListener = OrientationChangeListener(context, this)
 
     /** Sets necessary parameters and starts the camera */
     fun startCamera() {
@@ -184,21 +183,24 @@ class Controller(
     }
 
     /** Rotate the picture to match the orientation of what users see */
-    override fun onOrientationChanged(orientation: Int) {
-        if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) return
+    private val orientationListener = object : OrientationEventListener(context) {
 
-        val id = prefs.getInt(CAMERA_KEY, CAMERA_FACING_BACK)
-        val info = Camera.CameraInfo()
-        Camera.getCameraInfo(id, info)
+        override fun onOrientationChanged(orientation: Int) {
+            if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) return
 
-        val fixedOrientation = (orientation + 45) / 90 * 90
+            val id = prefs.getInt(CAMERA_KEY, CAMERA_FACING_BACK)
+            val info = Camera.CameraInfo()
+            Camera.getCameraInfo(id, info)
 
-        val rotation = if (info.facing == CAMERA_FACING_FRONT) {
-            (info.orientation - fixedOrientation + 360) % 360
-        } else {
-            (info.orientation + fixedOrientation) % 360
+            val fixedOrientation = (orientation + 45) / 90 * 90
+
+            val rotation = if (info.facing == CAMERA_FACING_FRONT) {
+                (info.orientation - fixedOrientation + 360) % 360
+            } else {
+                (info.orientation + fixedOrientation) % 360
+            }
+            params?.setRotation(rotation)
         }
-        params?.setRotation(rotation)
     }
 
     /** Returns the aspect ratio of this camera size */

@@ -23,5 +23,7 @@ class ImageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Put taken picture into ImageView(R.id.takenImage)
         Glide.with(this).load(Singletons.data).into(takenImage)
+
+        // Do something with the picture and null out the data from the [Singletons]
     }
 }
